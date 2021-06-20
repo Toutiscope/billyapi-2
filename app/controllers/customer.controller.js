@@ -1,11 +1,12 @@
 const db = require("../models");
 const Customer = db.customers;
+const Address = db.addresses;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Customer
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   // Validate request
-  if (!req.body.lastname) {
+  if (!req.body) {
     res.status(400).send({
       message: "Content can not be empty!",
     });
@@ -17,35 +18,68 @@ exports.create = (req, res) => {
   //   lastname: req.body.lastname,
   //   firstname: req.body.firstname,
   //   company: req.body.company,
-  //   street: req.body.street,
-  //   complement: req.body.complement,
-  //   zipcode: req.body.zipcode,
-  //   city: req.body.city,
   //   status: req.body.status,
-  //   tel: req.body.tel,
-  //   mail: req.body.mail,
   //   note: req.body.note,
   // };
 
+  // Create an Address
+  // const address = {
+  //   mail: req.body.mail,
+  //   tel: req.body.tel,
+  //   street: req.body.street,
+  //   complement: req.body.complement,
+  //   zipCode: req.body.zipCode,
+  //   city: req.body.city,
+  // };
+
+  const customer = {
+    lastname: "Du Brésil",
+    firstname: "Michel",
+    company: "UneEntreprise",
+    status: "Professionnel",
+    note: "RAS",
+  };
+
+  const address = {
+    mail: "user@mail.fr",
+    tel: "0607060606",
+    street: "41 rue de la Street",
+    complement: "RAS",
+    zipCode: "44200",
+    city: "NANTES",
+  };
+
   // Save Customer in the database
-  Customer.create(customer)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Customer.",
-      });
-    });
+  const newCustomer = await Customer.create(customer);
+  const newAddress = await Address.create(address);
+  await newCustomer.addAddress(newAddress);
 };
 
 // Retrieve all Customers from the database.
 exports.findAll = (req, res) => {
-  const lastname = req.query.lastname;
-  var condition = lastname ? { lastname: { [Op.like]: `%${lastname}%` } } : null;
+  // Get all customers and all their associations
+  // Customer.findAll({ include: { all: true } })
+  //   .then((data) => {
+  //     res.send(data);
+  //   })
+  //   .catch((err) => {
+  //     res.status(500).send({
+  //       message:
+  //         err.message || "Some error occurred while retrieving customers.",
+  //     });
+  //   });
 
-  Customer.findAll({ where: condition })
+  // Get all customers and all addresses associated
+  Customer.findAll({
+    include: [
+      {
+        model: db.addresses,
+        through: {
+          attributes: ["addressId"],
+        },
+      },
+    ],
+  })
     .then((data) => {
       res.send(data);
     })
@@ -61,13 +95,20 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Customer.findByPk(id)
+  Customer.findByPk(id, {
+    include: [
+      {
+        model: db.addresses,
+        attributes: { exclude: ['companyId'] }
+      },
+    ],
+  })
     .then((data) => {
       res.send(data);
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Error retrieving Customer with id=" + id,
+        message: "Error retrieving Company with id=" + id,
       });
     });
 };

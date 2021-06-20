@@ -20,9 +20,9 @@ app.use(express.urlencoded({ extended: true }));
 const db = require("./app/models");
 
 // Development mode : Model synchronization -> This checks what is the current state of the table and then performs the necessary changes in the table to make it match the model
-db.sequelize.sync({ alter: true }).then(() => {
-  console.log("Check and re-sync db.");
-});
+// db.sequelize.sync({ alter: true }).then(() => {
+//   console.log("Check and re-sync db.");
+// });
 // Production mode : comment previous code and uncomment the following
 // db.sequelize.sync();
 
@@ -33,6 +33,8 @@ app.get("/", (req, res) => {
 
 require("./app/routes/user.routes")(app);
 require("./app/routes/customer.routes")(app);
+require("./app/routes/address.routes")(app);
+require("./app/routes/company.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

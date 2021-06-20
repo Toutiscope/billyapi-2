@@ -50,8 +50,8 @@ db.customers.belongsToMany(db.addresses, { through: 'customerAddresses' });
 db.addresses.belongsToMany(db.customers, { through: 'customerAddresses' });
 
 // Company -> User : OneToMany
-db.company.hasMany(db.addresses);
-db.addresses.belongsTo(db.company);
+db.company.hasMany(db.users);
+db.users.belongsTo(db.company);
 
 // Estimation -> Users : ManyToMany
 db.estimations.belongsToMany(db.users, { through: 'estimationUsers' });
