@@ -1,11 +1,12 @@
 const db = require("../models");
 const Address = db.addresses;
 const Company = db.company;
+const Customer = db.customers;
 
 // Create and Save a new Address
 exports.create = (req, res) => {
   // Validate request
-  console.log(req.body)
+  console.log(req.body);
   if (!req.body) {
     res.status(400).send({
       message: "Content can not be empty!",
@@ -33,7 +34,6 @@ exports.create = (req, res) => {
     companyId: 1,
   };
 
-
   // Save Address in the database
   Address.create(address)
     .then((result) => {
@@ -53,9 +53,11 @@ exports.findAll = (req, res) => {
   // var condition = mail ? { mail: { [Op.like]: `%${mail}%` } } : null;
 
   Address.findAll({
-    include: [{
+    include: [
+      {
         model: Company,
-    }]
+      },
+    ],
   })
     .then((data) => {
       res.send(data);
@@ -73,9 +75,11 @@ exports.findOne = (req, res) => {
   const id = req.params.id;
 
   Address.findByPk(id, {
-    include: [{
-        model: Company,
-    }]
+    include: [
+      {
+        model: Customer,
+      },
+    ],
   })
     .then((data) => {
       res.send(data);

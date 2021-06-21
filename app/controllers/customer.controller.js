@@ -14,13 +14,13 @@ exports.create = async (req, res) => {
   }
 
   // Create a Customer
-  // const customer = {
-  //   lastname: req.body.lastname,
-  //   firstname: req.body.firstname,
-  //   company: req.body.company,
-  //   status: req.body.status,
-  //   note: req.body.note,
-  // };
+  const customer = {
+    lastname: req.body.lastname,
+    firstname: req.body.firstname,
+    company: req.body.company,
+    status: req.body.status,
+    note: req.body.note,
+  };
 
   // Create an Address
   // const address = {
@@ -32,13 +32,13 @@ exports.create = async (req, res) => {
   //   city: req.body.city,
   // };
 
-  const customer = {
-    lastname: "Du Brésil",
-    firstname: "Michel",
-    company: "UneEntreprise",
-    status: "Professionnel",
-    note: "RAS",
-  };
+  // const customer = {
+  //   lastname: "Du Brésil",
+  //   firstname: "Michel",
+  //   company: "UneEntreprise",
+  //   status: "Professionnel",
+  //   note: "RAS",
+  // };
 
   const address = {
     mail: "user@mail.fr",
@@ -50,7 +50,16 @@ exports.create = async (req, res) => {
   };
 
   // Save Customer in the database
-  const newCustomer = await Customer.create(customer);
+  const newCustomer = await Customer.create(customer)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving customers.",
+      });
+    });
   const newAddress = await Address.create(address);
   await newCustomer.addAddress(newAddress);
 };
@@ -69,17 +78,8 @@ exports.findAll = (req, res) => {
   //     });
   //   });
 
-  // Get all customers and all addresses associated
-  Customer.findAll({
-    include: [
-      {
-        model: db.addresses,
-        through: {
-          attributes: ["addressId"],
-        },
-      },
-    ],
-  })
+  // Get all customers without any association
+  Customer.findAll()
     .then((data) => {
       res.send(data);
     })
@@ -99,7 +99,7 @@ exports.findOne = (req, res) => {
     include: [
       {
         model: db.addresses,
-        attributes: { exclude: ['companyId'] }
+        attributes: { exclude: ["companyId"] },
       },
     ],
   })
@@ -141,55 +141,89 @@ exports.update = (req, res) => {
 // Delete a Customer with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
-
-  Customer.destroy({
-    where: { id: id },
+  // Find if his address is associated with another customer
+  Address.findAll({
+    include: [
+      {
+        model: db.customers,
+        where: { id: id },
+      },
+    ],
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Customer was deleted successfully!",
-        });
+    .then((data) => {
+      console.log(data.length);
+      if (data.length < 2) {
+        console.log("DELETE" + id);
+        Customer.destroy({
+          where: { id: id },
+        })
+          .then((num) => {
+            if (num == 1) {
+              res.send({
+                message: "Customer was deleted successfully!",
+              });
+            } else {
+              res.send({
+                message: `Cannot delete Customer with id=${id}. Maybe Customer was not found!`,
+              });
+            }
+          })
+          .catch((err) => {
+            res.status(500).send({
+              message: "Could not delete Customer with id=" + id,
+            });
+          });
       } else {
-        res.send({
-          message: `Cannot delete Customer with id=${id}. Maybe Customer was not found!`,
-        });
+        res.send(
+          "Cannot delete this customer because his address is also associated to other customers"
+        );
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Could not delete Customer with id=" + id,
+        message: "Error retrieving Customer with id=" + id,
       });
     });
 };
+
+// assoLength = data.customers.length;
+// console.log(data.customers.length);
+// if (assoLength < 1) {
+//   console.log("DELETE" + id);
+//   Customer.destroy({
+//     where: { id: id },
+//   })
+//     .then((num) => {
+//       if (num == 1) {
+//         res.send({
+//           message: "Customer was deleted successfully!",
+//         });
+//       } else {
+//         res.send({
+//           message: `Cannot delete Customer with id=${id}. Maybe Customer was not found!`,
+//         });
+//       }
+//     })
+//     .catch((err) => {
+//       res.status(500).send({
+//         message: "Could not delete Customer with id=" + id,
+//       });
+//     });
+// }
 
 // Delete all Customers from the database.
-exports.deleteAll = (req, res) => {
-  Customer.destroy({
-    where: {},
-    truncate: false,
-  })
-    .then((nums) => {
-      res.send({ message: `${nums} Customers were deleted successfully!` });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all customers.",
-      });
-    });
-};
-
-// Find all pro Customers
-exports.findAllProfessionals = (req, res) => {
-  Customer.findAll({ where: { status: "professional" } })
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving customers.",
-      });
-    });
-};
+// exports.deleteAll = (req, res) => {
+//   Customer.destroy({
+//     where: {},
+//     truncate: false,
+//   })
+//     .then((nums) => {
+//       res.send({ message: `${nums} Customers were deleted successfully!` });
+//     })
+//     .catch((err) => {
+//       res.status(500).send({
+//         message:
+//           err.message || "Some error occurred while removing all customers.",
+//       });
+//     });
+// };
