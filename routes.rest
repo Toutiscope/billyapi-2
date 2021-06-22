@@ -10,6 +10,10 @@ POST http://localhost:8080/api/addresses
 
 POST http://localhost:8080/api/companies
 
+### POST A new User
+
+POST http://localhost:8080/api/users
+
 ### GET All customers
 
 GET http://localhost:8080/api/customers
@@ -22,21 +26,29 @@ GET http://localhost:8080/api/addresses
 
 GET http://localhost:8080/api/companies
 
+### GET All users
+
+GET http://localhost:8080/api/users
+
 ### GET All published tutorials
 
 GET http://localhost:8080/api/tutorials/published
 
 ### GET One Customer
 
-GET http://localhost:8080/api/customers/14
+GET http://localhost:8080/api/customers/12
 
 ### GET One Address
 
-GET http://localhost:8080/api/addresses/13
+GET http://localhost:8080/api/addresses/12
 
 ### GET One Company
 
 GET http://localhost:8080/api/companies/5
+
+### Get One User
+
+GET http://localhost:8080/api/users/1
 
 
 ### PUT One tutorial
@@ -49,4 +61,16 @@ GET http://localhost:8080/api/tutorials?title=titre
 
 ### DELETE one Customer
 
-DELETE http://localhost:8080/api/customers/13
+DELETE http://localhost:8080/api/customers/17
+
+### UPDATE one Customer
+
+PUT http://localhost:8080/api/customers/15
+
+### UPDATE one Address
+
+PUT http://localhost:8080/api/addresses/6
+
+### UPDATE one Company
+
+PUT http://localhost:8080/api/companies/3

@@ -12,8 +12,8 @@ module.exports = (app) => {
   // Retrieve a single company with id
   router.get("/:id", companies.findOne);
 
-  // // Update a company with id
-  // router.put("/:id", companies.update);
+  // Update a company with id
+  router.put("/:id", companies.update);
 
   // // Delete a company with id
   // router.delete("/:id", companies.delete);

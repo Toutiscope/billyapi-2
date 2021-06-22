@@ -44,20 +44,41 @@ exports.create = async (req, res) => {
   };
 
   // Save Company in the database
-  const newCompany = await Company.create(company);
-  const newAddress = await Address.create(address);
-  await newCompany.addAddress(newAddress);
+  Company.findAll()
+    .then((data) => {
+      if (data.length < 1) {
+        const newCompany = Company.create(company);
+        const newAddress = Address.create(address);
+        newCompany.addAddress(newAddress).then((data) => {
+          res.send(data);
+        });
+      } else {
+        console.log("Cannot insert a new Customer.");
+        console.log(data.length);
+      }
+    })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving companies.",
+      });
+    });
 };
 
 // Retrieve all Companys from the database.
 exports.findAll = (req, res) => {
-    // const id = req.query.id;
+  // const id = req.query.id;
   // var condition = mail ? { mail: { [Op.like]: `%${mail}%` } } : null;
 
   Company.findAll({
-    include: [{
-      model: db.addresses // will create a left join
-    }]
+    include: [
+      {
+        model: db.addresses, // will create a left join
+      },
+    ],
   })
     .then((data) => {
       res.send(data);
@@ -95,7 +116,16 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
   const id = req.params.id;
 
-  Company.update(req.body, {
+  const company = {
+    // name: "QB MAKER Updated",
+    // ceo: "Quentin Boubou",
+    // logo: "/",
+    // siret: "09234567891011",
+    // website: "https://qbmaker.com",
+    status: "SARL",
+  };
+
+  Company.update(company, {
     where: { id: id },
   })
     .then((num) => {
@@ -117,29 +147,29 @@ exports.update = (req, res) => {
 };
 
 // Delete a Company with the specified id in the request
-exports.delete = (req, res) => {
-  const id = req.params.id;
+// exports.delete = (req, res) => {
+//   const id = req.params.id;
 
-  Company.destroy({
-    where: { id: id },
-  })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Company was deleted successfully!",
-        });
-      } else {
-        res.send({
-          message: `Cannot delete Company with id=${id}. Maybe Company was not found!`,
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Could not delete Company with id=" + id,
-      });
-    });
-};
+//   Company.destroy({
+//     where: { id: id },
+//   })
+//     .then((num) => {
+//       if (num == 1) {
+//         res.send({
+//           message: "Company was deleted successfully!",
+//         });
+//       } else {
+//         res.send({
+//           message: `Cannot delete Company with id=${id}. Maybe Company was not found!`,
+//         });
+//       }
+//     })
+//     .catch((err) => {
+//       res.status(500).send({
+//         message: "Could not delete Company with id=" + id,
+//       });
+//     });
+// };
 
 // Delete all Companys from the database.
 exports.deleteAll = (req, res) => {

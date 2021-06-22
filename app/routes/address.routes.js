@@ -12,8 +12,8 @@ module.exports = (app) => {
   // Retrieve a single address with id
   router.get("/:id", addresses.findOne);
 
-  // // Update a address with id
-  // router.put("/:id", addresses.update);
+  // Update a address with id
+  router.put("/:id", addresses.update);
 
   // // Delete a address with id
   // router.delete("/:id", addresses.delete);

@@ -1,3 +1,4 @@
+const { addresses } = require("../models");
 const db = require("../models");
 const Address = db.addresses;
 const Company = db.company;
@@ -95,7 +96,12 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
   const id = req.params.id;
 
-  Address.update(req.body, {
+  const address = {
+    mail: "update@mail.fr",
+    city: "PANAM",
+  };
+
+  Address.update(address, {
     where: { id: id },
   })
     .then((num) => {

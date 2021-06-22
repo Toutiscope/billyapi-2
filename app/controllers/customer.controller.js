@@ -41,16 +41,19 @@ exports.create = async (req, res) => {
   // };
 
   const address = {
-    mail: "user@mail.fr",
+    mail: "user18@mail.fr",
     tel: "0607060606",
-    street: "41 rue de la Street",
+    street: "18 rue de la Street",
     complement: "RAS",
     zipCode: "44200",
     city: "NANTES",
   };
 
   // Save Customer in the database
-  const newCustomer = await Customer.create(customer)
+  const newCustomer = await Customer.create(customer);
+  const newAddress = await Address.create(address);
+  await newCustomer
+    .addAddress(newAddress)
     .then((data) => {
       res.send(data);
     })
@@ -60,8 +63,6 @@ exports.create = async (req, res) => {
           err.message || "Some error occurred while retrieving customers.",
       });
     });
-  const newAddress = await Address.create(address);
-  await newCustomer.addAddress(newAddress);
 };
 
 // Retrieve all Customers from the database.
@@ -117,7 +118,11 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
   const id = req.params.id;
 
-  Customer.update(req.body, {
+  const customer = {
+    lastname: "Hurel"
+  }
+
+  Customer.update(customer, {
     where: { id: id },
   })
     .then((num) => {
@@ -153,7 +158,7 @@ exports.delete = (req, res) => {
     .then((data) => {
       console.log(data.length);
       if (data.length < 2) {
-        console.log("DELETE" + id);
+        // console.log("DELETE" + id);
         Customer.destroy({
           where: { id: id },
         })
