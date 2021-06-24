@@ -74,3 +74,15 @@ PUT http://localhost:8080/api/addresses/6
 ### UPDATE one Company
 
 PUT http://localhost:8080/api/companies/3
+
+### UPDATE one User
+
+PUT http://localhost:8080/api/users/3
+
+### SIGNUP
+
+POST http://localhost:8080/api/users/signup
+
+### LOGIN
+
+POST http://localhost:8080/api/users/login

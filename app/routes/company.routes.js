@@ -3,23 +3,25 @@ module.exports = (app) => {
 
   var router = require("express").Router();
 
+  const auth = require("../middleware/auth.js");
+
   // Create a new company
-  router.post("/", companies.create);
+  router.post("/", auth, companies.create);
 
   // Retrieve all companies
-  router.get("/", companies.findAll);
+  router.get("/", auth, companies.findAll);
 
   // Retrieve a single company with id
-  router.get("/:id", companies.findOne);
+  router.get("/:id", auth, companies.findOne);
 
   // Update a company with id
-  router.put("/:id", companies.update);
+  router.put("/:id", auth, companies.update);
 
   // // Delete a company with id
-  // router.delete("/:id", companies.delete);
+  // router.delete("/:id", auth, companies.delete);
 
   // // Delete all companies
-  // router.delete("/", companies.deleteAll);
+  // router.delete("/", auth, companies.deleteAll);
 
   app.use("/api/companies", router);
 };

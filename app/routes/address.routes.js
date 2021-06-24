@@ -3,23 +3,25 @@ module.exports = (app) => {
 
   var router = require("express").Router();
 
+  const auth = require("../middleware/auth.js");
+
   // Create a new address
-  router.post("/", addresses.create);
+  router.post("/", auth, addresses.create);
 
   // Retrieve all addresses
-  router.get("/", addresses.findAll);
+  router.get("/", auth, addresses.findAll);
 
   // Retrieve a single address with id
-  router.get("/:id", addresses.findOne);
+  router.get("/:id", auth, addresses.findOne);
 
   // Update a address with id
-  router.put("/:id", addresses.update);
+  router.put("/:id", auth, addresses.update);
 
   // // Delete a address with id
-  // router.delete("/:id", addresses.delete);
+  // router.delete("/:id", auth, addresses.delete);
 
   // // Delete all addresses
-  // router.delete("/", addresses.deleteAll);
+  // router.delete("/", auth, addresses.deleteAll);
 
   app.use("/api/addresses", router);
 };

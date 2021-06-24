@@ -32,6 +32,7 @@ app.get("/", (req, res) => {
 });
 
 require("./app/routes/user.routes")(app);
+require("./app/routes/auth.routes")(app);
 require("./app/routes/customer.routes")(app);
 require("./app/routes/address.routes")(app);
 require("./app/routes/company.routes")(app);
