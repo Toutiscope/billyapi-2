@@ -24,7 +24,7 @@ const db = require("./app/models");
 //   console.log("Check and re-sync db.");
 // });
 // Production mode : comment previous code and uncomment the following
-// db.sequelize.sync();
+db.sequelize.sync();
 
 // simple route
 app.get("/", (req, res) => {

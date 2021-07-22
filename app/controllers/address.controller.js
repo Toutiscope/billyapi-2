@@ -16,29 +16,19 @@ exports.create = (req, res) => {
   }
 
   // Create an Address
-  // const address = {
-  //   mail: req.body.mail,
-  //   tel: req.body.tel,
-  //   street: req.body.street,
-  //   complement: req.body.complement,
-  //   zipCode: req.body.zipCode,
-  //   city: req.body.city,
-  // };
-
   const address = {
-    mail: "user@mail.fr",
-    tel: "0607060606",
-    street: "41 rue de la Street",
-    complement: "RAS",
-    zipCode: "44200",
-    city: "NANTES",
-    companyId: 1,
+    mail: req.body.mail,
+    tel: req.body.tel,
+    street: req.body.street,
+    complement: req.body.complement,
+    zipCode: req.body.zipCode,
+    city: req.body.city,
   };
 
   // Save Address in the database
   Address.create(address)
-    .then((result) => {
-      res.send(result);
+    .then((data) => {
+      res.status(201).send(data);
     })
     .catch((err) => {
       res.status(500).send({
@@ -97,8 +87,12 @@ exports.update = (req, res) => {
   const id = req.params.id;
 
   const address = {
-    mail: "update@mail.fr",
-    city: "PANAM",
+    mail: req.body.mail,
+    tel: req.body.tel,
+    street: req.body.street,
+    complement: req.body.complement,
+    zipCode: req.body.zipCode,
+    city: req.body.city,
   };
 
   Address.update(address, {
@@ -106,7 +100,7 @@ exports.update = (req, res) => {
   })
     .then((num) => {
       if (num == 1) {
-        res.send({
+        res.status(200).send({
           message: "Address was updated successfully.",
         });
       } else {

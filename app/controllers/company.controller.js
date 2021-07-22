@@ -6,7 +6,6 @@ const Address = db.addresses;
 // Create and Save a new Company
 exports.create = async (req, res) => {
   // Validate request
-  console.log(req.body);
   if (!req.body) {
     res.status(400).send({
       message: "Content can not be empty!",
@@ -15,32 +14,23 @@ exports.create = async (req, res) => {
   }
 
   // Create an Company
-  // const company = {
-  //   name: req.body.name,
-  //   ceo: req.body.ceo,
-  //   logo: req.body.logo,
-  //   siret: req.body.siret,
-  //   website: req.body.website,
-  //   status: req.body.status,
-  // };
-
   const company = {
-    name: "QB MAKER",
-    ceo: "Quentin Bouquin",
-    logo: "RAS",
-    siret: "01234567891011",
-    website: "https://qbmaker.com",
-    status: "Entreprise unipersonnelle",
+    name: req.body.name,
+    ceo: req.body.ceo,
+    logo: req.body.logo,
+    siret: req.body.siret,
+    website: req.body.website,
+    status: req.body.status,
   };
 
+  // Create an Address
   const address = {
-    mail: "admin@mail.fr",
-    tel: "0607060806",
-    street: "12 rue de l'entreprise",
-    // complement: NULL,
-    zipCode: "44300",
-    city: "NANTES",
-    companyId: 1,
+    mail: req.body.mail,
+    tel: req.body.tel,
+    street: req.body.street,
+    complement: req.body.complement,
+    zipCode: req.body.zipCode,
+    city: req.body.city,
   };
 
   // Save Company in the database
@@ -49,16 +39,15 @@ exports.create = async (req, res) => {
       if (data.length < 1) {
         const newCompany = Company.create(company);
         const newAddress = Address.create(address);
-        newCompany.addAddress(newAddress).then((data) => {
-          res.send(data);
+        newCompany.addAddress(newAddress).then(() => {
+          res.send({ message: "Company created ! " });
         });
       } else {
-        console.log("Cannot insert a new Customer.");
-        console.log(data.length);
+        () => res.send({ message: "Cannot insert a new Company." });
       }
     })
-    .then((data) => {
-      res.send(data);
+    .then(() => {
+      res.send({ message: "Company already exists" });
     })
     .catch((err) => {
       res.status(500).send({

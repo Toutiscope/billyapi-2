@@ -23,63 +23,36 @@ exports.create = async (req, res) => {
   };
 
   // Create an Address
-  // const address = {
-  //   mail: req.body.mail,
-  //   tel: req.body.tel,
-  //   street: req.body.street,
-  //   complement: req.body.complement,
-  //   zipCode: req.body.zipCode,
-  //   city: req.body.city,
-  // };
-
-  // const customer = {
-  //   lastname: "Du Brésil",
-  //   firstname: "Michel",
-  //   company: "UneEntreprise",
-  //   status: "Professionnel",
-  //   note: "RAS",
-  // };
-
   const address = {
-    mail: "user18@mail.fr",
-    tel: "0607060606",
-    street: "18 rue de la Street",
-    complement: "RAS",
-    zipCode: "44200",
-    city: "NANTES",
+    mail: req.body.mail,
+    tel: req.body.tel,
+    street: req.body.street,
+    complement: req.body.complement,
+    zipCode: req.body.zipCode,
+    city: req.body.city,
   };
 
   // Save Customer in the database
-  const newCustomer = await Customer.create(customer);
+  const newCustomer = await Customer.create(customer).then((data) => {
+    res.status(201).send(data);
+  });
   const newAddress = await Address.create(address);
   await newCustomer
     .addAddress(newAddress)
     .then((data) => {
-      res.send(data);
+      res.status(201).send(data);
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving customers.",
+          err.message ||
+          "Some error occurred while creating address and customer.",
       });
     });
 };
 
-// Retrieve all Customers from the database.
+// Get all customers without any association
 exports.findAll = (req, res) => {
-  // Get all customers and all their associations
-  // Customer.findAll({ include: { all: true } })
-  //   .then((data) => {
-  //     res.send(data);
-  //   })
-  //   .catch((err) => {
-  //     res.status(500).send({
-  //       message:
-  //         err.message || "Some error occurred while retrieving customers.",
-  //     });
-  //   });
-
-  // Get all customers without any association
   Customer.findAll()
     .then((data) => {
       res.send(data);
@@ -119,8 +92,8 @@ exports.update = (req, res) => {
   const id = req.params.id;
 
   const customer = {
-    lastname: "Hurel"
-  }
+    lastname: "Hurel",
+  };
 
   Customer.update(customer, {
     where: { id: id },

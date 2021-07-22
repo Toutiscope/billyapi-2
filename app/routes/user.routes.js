@@ -6,7 +6,7 @@ module.exports = (app) => {
   const auth = require("../middleware/auth.js");
 
   // Create a new User
-  // router.post("/", users.create);
+  router.post("/", auth, users.create);
 
   // Retrieve all users
   router.get("/", auth, users.findAll);

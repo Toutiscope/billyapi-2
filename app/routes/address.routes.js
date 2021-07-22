@@ -18,7 +18,7 @@ module.exports = (app) => {
   router.put("/:id", auth, addresses.update);
 
   // // Delete a address with id
-  // router.delete("/:id", auth, addresses.delete);
+  router.delete("/:id", auth, addresses.delete);
 
   // // Delete all addresses
   // router.delete("/", auth, addresses.deleteAll);

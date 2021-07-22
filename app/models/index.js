@@ -1,28 +1,42 @@
-require('dotenv').config()
-const dbConfig = require("../config/config.js");
+require("dotenv").config();
+// const dbConfig = require("../config/config.js");
 
 const Sequelize = require("sequelize");
-const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
-  host: dbConfig.HOST,
-  dialect: dbConfig.dialect,
+// const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
+//   host: dbConfig.HOST,
+//   dialect: dbConfig.dialect,
 
-  pool: {
-    max: dbConfig.pool.max,
-    min: dbConfig.pool.min,
-    acquire: dbConfig.pool.acquire,
-    idle: dbConfig.pool.idle
-  }
-});
+//   pool: {
+//     max: dbConfig.pool.max,
+//     min: dbConfig.pool.min,
+//     acquire: dbConfig.pool.acquire,
+//     idle: dbConfig.pool.idle,
+//   },
+// });
+
+const env = process.env.NODE_ENV || "production";
+const config = require(__dirname + "/../config/config.json")[env];
+const db = {};
+
+let sequelize;
+if (config.use_env_variable) {
+  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+} else {
+  sequelize = new Sequelize(
+    config.database,
+    config.username,
+    config.password,
+    config
+  );
+}
 
 // Test the connection
 try {
   sequelize.authenticate();
-  console.log('Connecté à la base de données MySQL!');
+  console.log("Connecté à la base de données MySQL!");
 } catch (error) {
-  console.error('Impossible de se connecter, erreur suivante :', error);
+  console.error("Impossible de se connecter, erreur suivante :", error);
 }
-
-const db = {};
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
@@ -38,24 +52,23 @@ db.bills = require("./bill.model.js")(sequelize, Sequelize);
 db.products = require("./product.model.js")(sequelize, Sequelize);
 db.materials = require("./material.model.js")(sequelize, Sequelize);
 
-
-// ASSOCIATIONS 
+// ASSOCIATIONS
 
 // Company -> Address : OneToMany
 db.company.hasMany(db.addresses);
 db.addresses.belongsTo(db.company);
 
 // Customer -> Address : ManyToMany
-db.customers.belongsToMany(db.addresses, { through: 'customerAddresses' });
-db.addresses.belongsToMany(db.customers, { through: 'customerAddresses' });
+db.customers.belongsToMany(db.addresses, { through: "customerAddresses" });
+db.addresses.belongsToMany(db.customers, { through: "customerAddresses" });
 
 // Company -> User : OneToMany
 db.company.hasMany(db.users);
 db.users.belongsTo(db.company);
 
 // Estimation -> Users : ManyToMany
-db.estimations.belongsToMany(db.users, { through: 'estimationUsers' });
-db.users.belongsToMany(db.estimations, { through: 'estimationUsers' });
+db.estimations.belongsToMany(db.users, { through: "estimationUsers" });
+db.users.belongsToMany(db.estimations, { through: "estimationUsers" });
 
 // Customer -> Estimation : OneToMany
 db.customers.hasMany(db.estimations);
@@ -69,12 +82,11 @@ db.bills.belongsTo(db.estimations);
 // MISS IT BUT HAVE TO RESOLVE THE ALGORITHM PB BEFORE
 
 // Product -> Quantity : ManyToMany
-db.products.belongsToMany(db.quantities, { through: 'quantityProducts' });
-db.quantities.belongsToMany(db.products, { through: 'quantityProducts' });
+db.products.belongsToMany(db.quantities, { through: "quantityProducts" });
+db.quantities.belongsToMany(db.products, { through: "quantityProducts" });
 
 // Material -> Product : OneToMany
 db.materials.hasMany(db.products);
 db.products.belongsTo(db.materials);
-
 
 module.exports = db;

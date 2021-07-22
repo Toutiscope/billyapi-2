@@ -3,13 +3,34 @@ const saltRounds = 10;
 const db = require("../models");
 const User = db.users;
 const Op = db.Sequelize.Op;
+console.log(User);
+
+// const user = User.build(); // Same as new User();
+// console.log(nUser instanceof User); // true
+
+// Create and Save a new User
+exports.create = async (req, res) => {
+  const hash = bcrypt.hashSync(req.body.password, saltRounds);
+
+  const user = {
+    lastname: req.body.lastname,
+    firstname: req.body.firstname,
+    mail: req.body.mail,
+    password: hash,
+    companyId: req.body.companyId,
+  };
+
+  await User.create(user)
+    .then((user) => {
+      res.status(201).send(user);
+      // console.log(user instanceof User); //true
+    })
+    .catch((error) => res.status(400).json({ error }));
+};
 
 // Retrieve all Users from the database.
 exports.findAll = (req, res) => {
-  const mail = req.query.mail;
-  var condition = mail ? { mail: { [Op.like]: `%${mail}%` } } : null;
-
-  User.findAll({ where: condition })
+  User.findAll()
     .then((data) => {
       res.send(data);
     })
@@ -20,18 +41,15 @@ exports.findAll = (req, res) => {
     });
 };
 
-// Find a single User with an id
-exports.findOne = (req, res) => {
+exports.findOne = async (req, res) => {
   const id = req.params.id;
 
-  User.findByPk(id)
+  await User.findByPk(id)
     .then((data) => {
       res.send(data);
     })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Error retrieving User with id=" + id,
-      });
+    .catch((error) => {
+      res.status(500).json({ error });
     });
 };
 
@@ -48,6 +66,7 @@ exports.update = (req, res) => {
     password: hash,
     companyId: req.body.companyId,
   };
+
   User.update(user, {
     where: { id: id },
   })
