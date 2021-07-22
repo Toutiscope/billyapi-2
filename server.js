@@ -1,6 +1,7 @@
 const express = require("express");
 // const bodyParser = require("body-parser");
 const cors = require("cors");
+const serverless = require("serverless-http");
 
 const app = express();
 
@@ -42,3 +43,6 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+
+module.exports = app;
+module.exports.handler = serverless(app);
